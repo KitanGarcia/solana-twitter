@@ -11,7 +11,7 @@ describe('solana-twitter', () => {
 
   it('Is initialized!', async () => {
     // Add your test here.
-    const tx = await program.rpc.initialize({});
+    const tx = await program.rpc.sendTweet({});
     console.log("Your transaction signature", tx);
   });
 });

@@ -2,6 +2,7 @@ import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
 import { SolanaTwitter } from '../target/types/solana_twitter';
 import * as assert from "assert";
+import * as bs58 from "bs58";
 
 describe('solana-twitter', () => {
 
@@ -121,5 +122,46 @@ describe('solana-twitter', () => {
     }
 
     assert.fail("The instruction should have failed with a 281-character topic.");
+  });
+
+  it('can fetch all tweets', async() => {
+    const tweetAccounts = await program.account.tweet.all();
+    assert.equal(tweetAccounts.length, 3);
+  });
+
+  it('can filter tweets by author', async() => {
+    const authorPublicKey = await program.provider.wallet.publicKey;
+    const tweetAccounts = await program.account.tweet.all([
+      {
+        memcmp: {
+          offset: 8, // Length of discriminator
+          bytes: authorPublicKey.toBase58()
+        }
+      }
+    ]);
+
+    assert.equal(tweetAccounts.length, 2);
+    assert.ok(tweetAccounts.every(tweetAccount => { // every() returns true if the provided callback returns true for every account
+      return tweetAccount.account.author.toBase58() === authorPublicKey.toBase58();
+    }));
+  });
+
+  it('can filter tweets by topics', async() => {
+    const tweetAccounts = await program.account.tweet.all([
+      {
+        memcmp: {
+          offset: 8 + // Discriminator
+            32 + // Author's public key
+            8 + // Timestamp
+            4, // Topic string prefix
+          bytes: bs58.encode(Buffer.from('Veganism'))
+        }
+      }
+    ])
+
+    assert.equal(tweetAccounts.length, 2);
+    assert.ok(tweetAccounts.every(tweetAccount => {
+      return tweetAccount.account.topic === "Veganism";
+    }));
   });
 });

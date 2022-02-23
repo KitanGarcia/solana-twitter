@@ -1,5 +1,6 @@
 // CSS.
-import './main.css'
+import 'solana-wallets-vue/styles.css';
+import './main.css';
 
 // Routing.
 import { createRouter, createWebHashHistory } from 'vue-router'

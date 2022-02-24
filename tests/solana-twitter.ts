@@ -14,7 +14,7 @@ describe('solana-twitter', () => {
   it('can send a new tweet', async () => {
     const tweet = anchor.web3.Keypair.generate(); // Generate a keypair for accounts (publicKey) and signers
 
-    await program.rpc.sendTweet("Veganism", "Hummus is good", {
+    await program.rpc.sendTweet("veganism", "Hummus is good", {
       accounts: {
         tweet: tweet.publicKey,
         author: program.provider.wallet.publicKey, // Access our wallet's public key
@@ -28,7 +28,7 @@ describe('solana-twitter', () => {
 
     // Author and wallet have different references, so we convert to base 58 so they'll only be equal if the strings are the same
     assert.equal(tweetAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58())
-    assert.equal(tweetAccount.topic, "Veganism");
+    assert.equal(tweetAccount.topic, "veganism");
     assert.equal(tweetAccount.content, "Hummus is good");
     assert.ok(tweetAccount.timestamp);
   });
@@ -64,7 +64,7 @@ describe('solana-twitter', () => {
     const tweet = anchor.web3.Keypair.generate(); // Generate a keypair for accounts (publicKey) and signers
 
     // Call sendTweet on behalf of this other user
-    await program.rpc.sendTweet("Veganism", "Tofu is good", {
+    await program.rpc.sendTweet("veganism", "Tofu is good", {
       accounts: {
         tweet: tweet.publicKey,
         author: otherUser.publicKey,
@@ -77,7 +77,7 @@ describe('solana-twitter', () => {
 
     // Author and wallet have different references, so we convert to base 58 so they'll only be equal if the strings are the same
     assert.equal(tweetAccount.author.toBase58(), otherUser.publicKey.toBase58())
-    assert.equal(tweetAccount.topic, "Veganism");
+    assert.equal(tweetAccount.topic, "veganism");
     assert.equal(tweetAccount.content, "Tofu is good");
     assert.ok(tweetAccount.timestamp);
   });
@@ -107,7 +107,7 @@ describe('solana-twitter', () => {
     try {
       const tweet = anchor.web3.Keypair.generate(); // Generate a keypair for accounts (publicKey) and signers
       const contentWith281Chars = "x".repeat(281);
-      await program.rpc.sendTweet("Veganism", contentWith281Chars, {
+      await program.rpc.sendTweet("veganism", contentWith281Chars, {
         accounts: {
           tweet: tweet.publicKey,
           author: program.provider.wallet.publicKey, // Access our wallet's public key
@@ -154,14 +154,14 @@ describe('solana-twitter', () => {
             32 + // Author's public key
             8 + // Timestamp
             4, // Topic string prefix
-          bytes: bs58.encode(Buffer.from('Veganism'))
+          bytes: bs58.encode(Buffer.from('veganism'))
         }
       }
     ])
 
     assert.equal(tweetAccounts.length, 2);
     assert.ok(tweetAccounts.every(tweetAccount => {
-      return tweetAccount.account.topic === "Veganism";
+      return tweetAccount.account.topic === "veganism";
     }));
   });
 });
